@@ -1,0 +1,55 @@
+# GitHub Actions CI — Lint + Build + Test
+# Drop this into .github/workflows/ci.yml
+#
+# Runs on every PR and push to main.
+# Uses placeholder env vars for the build step — replace with real values
+# or set them as GitHub secrets.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint + Build + Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      # Placeholder env vars for build step.
+      # Add real secrets in GitHub Settings > Secrets and Variables > Actions.
+      # Common placeholders — delete what you don't need:
+      DATABASE_URL: "placeholder"
+      API_KEY: "placeholder"
+      AUTH_SECRET: "placeholder"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Test
+        run: npm test --if-present
