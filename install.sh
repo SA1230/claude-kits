@@ -3,10 +3,10 @@
 # Claude Code Kit System — One-line installer
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/YOUR_USER/claude-kits/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/SA1230/claude-kits/main/install.sh | bash
 #
 # Or clone manually:
-#   git clone https://github.com/YOUR_USER/claude-kits ~/.claude/kits
+#   git clone https://github.com/SA1230/claude-kits ~/.claude/kits
 #   bash ~/.claude/kits/install.sh --local
 #
 
@@ -18,7 +18,7 @@ SKILLS_DIR="$HOME/.claude/skills"
 # --- If not already cloned, clone the repo ---
 if [ "${1:-}" != "--local" ] && [ ! -f "$KITS_DIR/README.md" ]; then
   echo "Cloning kits to $KITS_DIR..."
-  git clone https://github.com/YOUR_USER/claude-kits "$KITS_DIR"
+  git clone https://github.com/SA1230/claude-kits "$KITS_DIR"
 fi
 
 # --- Install global bootstrapping skills ---
