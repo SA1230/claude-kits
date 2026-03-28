@@ -43,6 +43,22 @@ The setup tax is real. Every hour spent wiring infrastructure is an hour not spe
 
 Four phases. Three lightweight checkpoints. One command.
 
+## Effort
+
+This skill does foundational work that affects the entire project lifetime. If the session is on medium effort, say: "This is a foundational setup — I'd recommend switching to high effort with `/effort` for the best results." Proceed either way, but the suggestion matters.
+
+## Empty Folder Path
+
+If all detection probes return nothing (no manifest, no source files, no git history beyond init), do NOT try to generate a CLAUDE.md from thin air. Instead:
+
+1. Ask ONE question: **"What are you building?"** — accept a sentence, a paragraph, or a reference to another repo/URL.
+2. If they reference another repo (local path or GitHub URL), read that repo's README, manifest, and key files to understand the architecture. Then propose what to build in THIS repo based on what you learned.
+3. If they describe it in words, propose a stack and architecture, then ask for confirmation.
+4. Once you have clarity, scaffold the project (create package.json, src/, tsconfig, etc.) BEFORE running Phase 1 detection again. Now detection has something to work with.
+5. Then continue with Phase 2-4 as normal.
+
+This path should feel conversational, not procedural. One smart question, one proposal, then build.
+
 ## Steps
 
 ### Phase 1: Detect
@@ -155,7 +171,35 @@ Installing:
 Adjust? (Enter to install all checked)
 ```
 
-Then run `/install-kit` for confirmed kits. This copies skills, hooks, templates, memory scaffolding, and CLAUDE.md fragments.
+Then install the confirmed kits using direct file copies. **Do NOT spawn subagents for installation — agents hit permission walls.** Instead:
+
+For each confirmed kit, run these Bash commands directly:
+```bash
+# Copy all skills from the kit
+for skill_dir in ~/.claude/kits/<kit-name>/skills/*/; do
+  skill=$(basename "$skill_dir")
+  mkdir -p .claude/skills/$skill
+  cp "$skill_dir/SKILL.md" .claude/skills/$skill/SKILL.md
+done
+
+# Copy hooks (if any)
+if [ -d ~/.claude/kits/<kit-name>/hooks ]; then
+  mkdir -p .claude/hooks
+  cp ~/.claude/kits/<kit-name>/hooks/* .claude/hooks/
+  chmod +x .claude/hooks/*
+fi
+
+# Copy memory templates (if any)
+if [ -d ~/.claude/kits/<kit-name>/memory-templates ]; then
+  # Detect or create the project memory directory
+  mem_dir=$(find ~/.claude/projects -type d -name memory -path "*$(basename $(pwd))*" 2>/dev/null | head -1)
+  if [ -n "$mem_dir" ]; then
+    cp -n ~/.claude/kits/<kit-name>/memory-templates/* "$mem_dir/"
+  fi
+fi
+```
+
+Then read each kit's `claude-md-fragment.md` and append to CLAUDE.md (check for duplicate sections first).
 
 ### Phase 4: Verify
 

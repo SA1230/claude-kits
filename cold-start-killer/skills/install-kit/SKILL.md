@@ -111,14 +111,18 @@ For each template in `~/.claude/kits/<kit>/memory-templates/`:
 - Determine the project memory directory (check for existing memory dir, or create at `~/.claude/projects/<slug>/memory/`)
 - Copy templates that do not already exist at the destination
 
-**d. Append CLAUDE.md fragment**
+**d. Integrate CLAUDE.md fragment**
 
 If the kit has a `claude-md-fragment.md`:
 1. Read the fragment
 2. Read the project CLAUDE.md
 3. Check if the first `##` heading from the fragment already appears in the project file
-4. If not, append the fragment to the end of CLAUDE.md (with a blank line separator)
-5. If yes, skip and report
+4. If yes, skip and report "section already exists"
+5. If not, find the best insertion point — NOT blind append:
+   - Look for a "## Infrastructure" or "## How to work with me" section — insert BEFORE it
+   - If those don't exist, look for the last `##` section and insert after it
+   - Only append to the very end as a last resort
+6. This ensures kit documentation lives with the project documentation, not tacked on at the bottom as an afterthought
 
 **e. Merge settings fragment**
 
